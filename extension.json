@@ -1,13 +1,21 @@
 {
 	"name": "Upload Fields",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": [
 		"Alexia E. Smith",
-		"Hydra Wiki Platform Team"
+		"Hydra Wiki Platform Team",
+		"Luka Simić"
 	],
 	"descriptionmsg": "uploadfields_description",
+	"url": "https://www.mediawiki.org/wiki/Extension:UploadFields",
 	"type": "specialpage",
 	"license-name": "GPL-2.0-or-later",
+	"config": {
+		"UploadFieldsParameterNamePadding": 0,
+		"UploadFieldsRemoveBlank": true,
+		"UploadFieldsSummaryParameter": "summary",
+		"UploadFieldsTemplate": "FileInfo"
+	},
 	"MessagesDirs": {
 		"UploadFields": [
 			"i18n"

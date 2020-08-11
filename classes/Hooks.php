@@ -29,6 +29,7 @@ class Hooks {
 	 * @return	boolean	true
 	 */
 	public static function onSpecialUploadComplete(SpecialUpload $specialUpload) {
+		global $wgUploadFieldsRemoveBlank, $wgUploadFieldsSummaryParameter, $wgUploadFieldsTemplate;
 		if ($specialUpload->mForReUpload) {
 			return true;
 		}
@@ -40,7 +41,7 @@ class Hooks {
 			$currentText = $content->getNativeData();
 		}
 
-		if (strpos($currentText, "{{FileInfo") !== false) {
+		if (strpos($currentText, "{{{$wgUploadFieldsTemplate}") !== false) {
 			// Already added.
 			return true;
 		}
@@ -50,18 +51,17 @@ class Hooks {
 			$fileInfo = [];
 			$request = $specialUpload->getRequest();
 
-			// $fileInfo[] = "summary=".str_replace('|', '{{!}}', $request->getText("wpUploadDescription"));
-			$fileInfo[] = "summary=" . $request->getText("wpUploadDescription");
+			$fileInfo[] = UploadField::formatParameterRow($wgUploadFieldsSummaryParameter, $request->getText("wpUploadDescription"));
 
 			foreach ($fields as $field) {
 				$value = $request->getVal($field->getKey());
-				if ($value !== null) {
+				if ($value !== null && (!$wgUploadFieldsRemoveBlank || !empty($value))) {
 					$fileInfo[] = $field->getWikiText($value);
 				}
 			}
 
 			if (!empty($fileInfo)) {
-				$fileInfoText = "{{FileInfo\n|" . implode("\n|", $fileInfo) . "\n}}";
+				$fileInfoText = "{{{$wgUploadFieldsTemplate}\n| " . implode("\n| ", $fileInfo) . "\n}}";
 
 				$currentText = (empty($currentText) ? $fileInfoText : $currentText . "\n\n" . $fileInfoText);
 				$newContent = ContentHandler::makeContent($currentText, $specialUpload->mLocalFile->getTitle());

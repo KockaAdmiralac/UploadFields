@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alexia E. Smith",
+			"KockaAdmiralac"
+        ]
+	},
+	"uploadfields": "Upload Fields",
+	"uploadfields_description": "Додаје нова поља на [[Посебно:Отпреми]] која ће бити аутоматски додата у викијев шаблон за опис датотека на страницама описа датотека."
+}

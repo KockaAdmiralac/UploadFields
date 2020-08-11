@@ -54,7 +54,7 @@ class UploadField {
 
 		$field = new self;
 		$field->setId($row['page_id']);
-		$field->setLabel(ucfirst(mb_strtolower($name, "UTF-8")));
+		$field->setLabel(mb_strtolower($name, "UTF-8"));
 		$field->setType($type);
 		$field->data['page'] = $row;
 
@@ -89,6 +89,18 @@ class UploadField {
 			}
 		}
 		return $fields;
+	}
+
+	/**
+	 * Format a single parameter row.
+	 *
+	 * @access	public
+	 * @return	string	Formatted parameter row
+	 */
+	public static function formatParameterRow(string $paramName, string $paramValue) {
+		global $wgUploadFieldsParameterNamePadding;
+		$paddedParamName = str_pad($paramName, $wgUploadFieldsParameterNamePadding, ' ');
+		return "{$paddedParamName} = $paramValue";
 	}
 
 	/**
@@ -151,9 +163,16 @@ class UploadField {
 			return false;
 		}
 
-		$this->data['label'] = substr($label, 0, 255);
+		$msg = wfMessage("UploadField-label-$label");
+		$defaultLabel = substr($label, 0, 255);
+		if ($msg->exists()) {
+			$this->data['label'] = $msg->parse();
+		} else {
+			$this->data['label'] = ucfirst($defaultLabel);
+		}
+		
 		if (!isset($this->data['field_key']) || empty($this->data['field_key'])) {
-			$this->data['field_key'] = $this->nameToKey($this->data['label']);
+			$this->data['field_key'] = $this->nameToKey($defaultLabel);
 		}
 
 		return true;
@@ -283,7 +302,7 @@ class UploadField {
 			case 'text':
 			case 'textarea':
 				// $text = $this->getKey().'='.str_replace('|', '{{!}}', $input);
-				$text = $this->getKey() . '=' . $input;
+				$text = self::formatParameterRow($this->getKey(), $input);
 				break;
 			case 'category':
 				$input = (array)$input;
@@ -391,8 +410,8 @@ class UploadField {
 				} else {
 					$value = substr($line, $depth);
 				}
-				$label = (string)$label;
-				$value = (string)$value;
+				$label = trim((string)$label);
+				$value = trim((string)$value);
 				if (empty($label) && !empty($value)) {
 					$label = $value;
 				}
